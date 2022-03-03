@@ -100,6 +100,20 @@
 #include "cmsis_os.h"
 
 
+#ifdef __cplusplus //告诉编译器，这部分代码按C语言的格式进行编译，而不是C++的
+extern "C"
+{
+
+#include "bsp_adc.h"
+#include "bsp_buzzer.h"
+#include "bsp_flash.h"
+}
+#endif
+
+#include "ins_task.h"
+#include "gimbal_task.h"
+#include "communicate_task.h"
+
 //include head,gimbal,gyro,accel,mag. gyro,accel and mag have the same data struct. total 5(CALI_LIST_LENGHT) devices, need data lenght + 5 * 4 bytes(name[3]+cali)
 #define FLASH_WRITE_BUF_LENGHT  (sizeof(head_cali_t) + sizeof(gimbal_cali_t) + sizeof(imu_cali_t) * 3  + CALI_LIST_LENGHT * 4)
 
@@ -211,7 +225,7 @@ uint32_t calibrate_task_stack;
 
 
 static const RC_ctrl_t *calibrate_RC;   //remote control point
-static head_cali_t     head_cali;       //head cali data
+head_cali_t     head_cali;       //head cali data
 static gimbal_cali_t   gimbal_cali;     //gimbal cali data
 static imu_cali_t      accel_cali;      //accel cali data
 static imu_cali_t      gyro_cali;       //gyro cali data
@@ -220,10 +234,9 @@ static imu_cali_t      mag_cali;        //mag cali data
 
 static uint8_t flash_write_buf[FLASH_WRITE_BUF_LENGHT];
 
-cali_sensor_t cali_sensor[CALI_LIST_LENGHT]; 
+cali_sensor_t cali_sensor[CALI_LIST_LENGHT];
 
-static const uint8_t cali_name[CALI_LIST_LENGHT][4] = {"HD", "GM", "GYR", "ACC", "MAG"};
-
+static const uint8_t cali_name[CALI_LIST_LENGHT][3] = {{'H', 'D'}, {'G', 'M'}, {'G', 'Y', 'R'}, {'A', 'C', 'C'}, {'M', 'A', 'G'}};
 
 //cali data address
 static uint32_t *cali_sensor_buf[CALI_LIST_LENGHT] = {
@@ -256,7 +269,7 @@ void calibrate_task(void *pvParameters)
 {
     static uint8_t i = 0;
     
-    calibrate_RC = get_remote_ctrl_point_cali();
+    calibrate_RC = remote_control.get_remote_ctrl_point_cali();
 
     while (1)
     {
@@ -406,11 +419,12 @@ static void RC_cmd_to_calibrate(void)
     {
         rc_action_flag = 0;
         rc_cmd_time = 0;
+        //TODO 对于云台,这个是摩擦轮校准,对于底盘这个是底盘校准
         //send CAN reset ID cmd to M3508
         //发送CAN重设ID命令到3508
-        //CAN_cmd_chassis_reset_ID();
-        //CAN_cmd_chassis_reset_ID();
-        //CAN_cmd_chassis_reset_ID();
+        can_receive.can_cmd_shoot_motor_reset_ID();
+        can_receive.can_cmd_shoot_motor_reset_ID();
+        can_receive.can_cmd_shoot_motor_reset_ID();
         cali_buzzer_off();
     }
 

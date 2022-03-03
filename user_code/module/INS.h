@@ -28,7 +28,7 @@ extern "C"{
 #endif
 
 #include <string.h>
-#include "pid.h"
+#include "Pid.h"
 #include "main.h"
 #include "cmsis_os.h"
 #include "bsp_imu_pwm.h"
@@ -74,9 +74,12 @@ extern "C"{
 
 #define INS_TASK_INIT_TIME 7 //任务开始初期 delay 一段时间
 
+//由于C板固定方式,再次进行了修整
 #define INS_YAW_ADDRESS_OFFSET    0
-#define INS_PITCH_ADDRESS_OFFSET  1
-#define INS_ROLL_ADDRESS_OFFSET   2
+#define INS_ROLL_ADDRESS_OFFSET   1
+#define INS_PITCH_ADDRESS_OFFSET  2
+
+
 
 #define INS_GYRO_X_ADDRESS_OFFSET 0
 #define INS_GYRO_Y_ADDRESS_OFFSET 1
@@ -90,7 +93,6 @@ extern "C"{
 #define INS_MAG_Y_ADDRESS_OFFSET 1
 #define INS_MAG_Z_ADDRESS_OFFSET 2
 
-#define IMU_temp_PWM(pwm)  imu_pwm_set(pwm)                    //pwm给定
 
 #define BMI088_BOARD_INSTALL_SPIN_MATRIX    \
     {0.0f, 1.0f, 0.0f},                     \
@@ -112,6 +114,7 @@ public:
 /*******************************************(C) 陀螺仪基本参数 ***********************************************/
     bmi088_real_data_t bmi088_real_data;                            //IMU数据存储
     ist8310_real_data_t ist8310_real_data;                          //磁力计数据存储
+    
     fp32 INS_gyro[3];
     fp32 INS_accel[3];
     fp32 INS_mag[3];
@@ -137,7 +140,8 @@ public:
 /*******************************************(C) 陀螺仪返回参数 ***********************************************/
 
 /*************************************************(C) PID *************************************************/
-    pid_type_def imu_temp_pid;                                               //陀螺仪临时PID
+    Pid imu_temp_pid;                                               //陀螺仪临时PID
+    fp32 temperature_fp32;
 /*************************************************(C) PID *************************************************/
     float timing_time;                               //tast run time , unit s.任务运行的时间 单位 s
     void imu_cali_slove(fp32 gyro[3], fp32 accel[3], fp32 mag[3],bmi088_real_data_t *bmi088, ist8310_real_data_t *ist8310);
@@ -178,68 +182,24 @@ extern void INS_cali_gyro(fp32 cali_scale[3], fp32 cali_offset[3], uint16_t *tim
   */
 extern void INS_set_cali_gyro(fp32 cali_scale[3], fp32 cali_offset[3]);
 
-// /**
-//   * @brief          get the quat
-//   * @param[in]      none
-//   * @retval         the point of INS_quat
-//   */
-// /**
-//   * @brief          获取四元数
-//   * @param[in]      none
-//   * @retval         INS_quat的指针
-//   */
-// extern const fp32 *get_INS_quat_point(void);
+/**
+  * @brief          控制bmi088的温度
+  * @param[in]      temp:bmi088的温度
+  * @retval         none
+  */
+static void imu_temp_control(fp32 temp);
 
-
-// /**
-//   * @brief          get the euler angle, 0:yaw, 1:pitch, 2:roll unit rad
-//   * @param[in]      none
-//   * @retval         the point of INS_angle
-//   */
-// /**
-//   * @brief          获取欧拉角, 0:yaw, 1:pitch, 2:roll 单位 rad
-//   * @param[in]      none
-//   * @retval         INS_angle的指针
-//   */
-// extern const fp32 *get_INS_angle_point(void);
-
-
-// /**
-//   * @brief          get the rotation speed, 0:x-axis, 1:y-axis, 2:roll-axis,unit rad/s
-//   * @param[in]      none
-//   * @retval         the point of INS_gyro
-//   */
-// /**
-//   * @brief          获取角速度,0:x轴, 1:y轴, 2:roll轴 单位 rad/s
-//   * @param[in]      none
-//   * @retval         INS_gyro的指针
-//   */
-// extern const fp32 *get_gyro_data_point(void);
-
-
-// /**
-//   * @brief          get aceel, 0:x-axis, 1:y-axis, 2:roll-axis unit m/s2
-//   * @param[in]      none
-//   * @retval         the point of INS_gyro
-//   */
-// /**
-//   * @brief          获取加速度,0:x轴, 1:y轴, 2:roll轴 单位 m/s2
-//   * @param[in]      none
-//   * @retval         INS_gyro的指针
-//   */
-// extern const fp32 *get_accel_data_point(void);
-
-// /**
-//   * @brief          get mag, 0:x-axis, 1:y-axis, 2:roll-axis unit ut
-//   * @param[in]      none
-//   * @retval         the point of INS_mag
-//   */
-// /**
-//   * @brief          获取加速度,0:x轴, 1:y轴, 2:roll轴 单位 ut
-//   * @param[in]      none
-//   * @retval         INS_mag的指针
-//   */
-// extern const fp32 *get_mag_data_point(void);
+/**
+ * @brief          open the SPI DMA accord to the value of imu_update_flag
+ * @param[in]      none
+ * @retval         none
+ */
+/**
+ * @brief          根据imu_update_flag的值开启SPI DMA
+ * @param[in]      temp:bmi088的温度
+ * @retval         none
+ */
+static void imu_cmd_spi_dma(void);
 
 
 

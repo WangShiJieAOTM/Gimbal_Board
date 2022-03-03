@@ -1,32 +1,53 @@
 /**
-  ****************************(C) COPYRIGHT 2021 SUMMERPRAY****************************
-  * @file       shoot.cpp/h
-  * @brief      �������
-  * @note       
+  ****************************(C) COPYRIGHT 2019 DJI****************************
+  * @file       shoot_task.c/h
+  * @brief      shoot control task, because use the euler angle calculated by
+
+  * @note
   * @history
   *  Version    Date            Author          Modification
-  *  V1.0.0     NOV-30-2021     summerpray      1. doing
+  *  V1.0.0     JUN-07-2022     方兆俊      1. doing
+  *
   *
   @verbatim
   ==============================================================================
-
+ *      ┌─┐       ┌─┐
+ *   ┌──┘ ┴───────┘ ┴──┐
+ *   │                 │
+ *   │       ───       │
+ *   │  ─┬┘       └┬─  │
+ *   │                 │
+ *   │       ─┴─       │
+ *   │                 │
+ *   └───┐         ┌───┘
+ *       │         │
+ *       │         │
+ *       │         │
+ *       │         └──────────────┐
+ *       │                        │
+ *       │                        ├─┐
+ *       │                        ┌─┘
+ *       │                        │
+ *       └─┐  ┐  ┌───────┬──┐  ┌──┘
+ *         │ ─┤ ─┤       │ ─┤ ─┤
+ *         └──┴──┘       └──┴──┘
+ *                神兽保佑
+ *               代码无BUG!
   ==============================================================================
   @endverbatim
-  ****************************(C) COPYRIGHT 2021 SUMMERPRAY****************************
+  ****************************(C) COPYRIGHT 2021 *******************************
   */
-#ifndef GIMBAL_BOARD_SHOOT_H
-#define GIMBAL_BOARD_SHOOT_H
-
+#ifndef SHOOT_TASK_H
+#define SHOOT_TASK_H
 #include "cmsis_os.h"
-#include "System_Config.h"
-#include "user_lib.h"
-#include "shoot.h"
+#include "system_config.h"
+#include "Shoot.h"
 
-//�����ʼ�� ����һ��ʱ��
-#define SHOOT_TASK_INIT_TIME 201 
+//任务初始化 空闲一段时间
+#define SHOOT_TASK_INIT_TIME 201
 #define SHOOT_CONTROL_TIME 1
+
 
 extern void shoot_task(void *pvParameters);
 
-
-#endif
+#endif 

@@ -51,7 +51,15 @@
 #include "System_Config.h"
 #include "INS.h"
 #include "gimbal.h"
+
+//任务开始空闲一段时间
+#define GIMBAL_TASK_INIT_TIME 201
+
+#define GIMBAL_CONTROL_TIME_MS 10
+
+
 extern void gimbal_task(void *pvParameters);
 
+extern uint8_t gimbal_imu_open_flag ;
 
 #endif //GIMBAL_BOARD_GIMBAL_TASK_H

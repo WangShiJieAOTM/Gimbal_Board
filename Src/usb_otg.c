@@ -1,12 +1,12 @@
 /**
   ******************************************************************************
-  * @file    can.h
-  * @brief   This file contains all the function prototypes for
-  *          the can.c file
+  * File Name          : USB_OTG.c
+  * Description        : This file provides code for the configuration
+  *                      of the USB_OTG instances.
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under Ultimate Liberty license
@@ -16,34 +16,23 @@
   *
   ******************************************************************************
   */
-/* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __CAN_H__
-#define __CAN_H__
-
 
 /* Includes ------------------------------------------------------------------*/
-#include "main.h"
+#include "usb_otg.h"
 
-/* USER CODE BEGIN Includes */
+/* USER CODE BEGIN 0 */
 
-/* USER CODE END Includes */
+/* USER CODE END 0 */
 
-extern CAN_HandleTypeDef hcan1;
-extern CAN_HandleTypeDef hcan2;
+/* USB_OTG_FS init function */
 
-/* USER CODE BEGIN Private defines */
+void MX_USB_OTG_FS_USB_Init(void)
+{
 
-/* USER CODE END Private defines */
+}
 
-void MX_CAN1_Init(void);
-void MX_CAN2_Init(void);
+/* USER CODE BEGIN 1 */
 
-/* USER CODE BEGIN Prototypes */
-
-/* USER CODE END Prototypes */
-
-
-
-#endif /* __CAN_H__ */
+/* USER CODE END 1 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -99,19 +99,8 @@
 #ifndef CALIBRATE_TASK_H
 #define CALIBRATE_TASK_H
 
-#include "Can_receive.h"
-#include "remote_control.h"
-#include "INS.h"
-#include "gimbal.h"
-
-#ifdef __cplusplus
-extern "C"{
-#endif
-
 #include "struct_typedef.h"
-#include "bsp_adc.h"
-#include "bsp_buzzer.h"
-#include "bsp_flash.h"
+
 //when imu is calibrating ,buzzer set frequency and strength. 当imu在校准,蜂鸣器的设置频率和强度
 #define imu_start_buzzer()          buzzer_on(95, 10000)    
 //when gimbal is calibrating ,buzzer set frequency and strength.当云台在校准,蜂鸣器的设置频率和强度
@@ -128,12 +117,8 @@ extern "C"{
 #define cali_flash_write(address, buf, len) flash_write_single_address((address), (buf), (len))     //flash write function,flash 写入函数
 #define cali_flash_erase(address, page_num) flash_erase_address((address), (page_num))              //flash erase function,flash擦除函数
 
-#ifdef __cplusplus
-}
-#endif
 
-
-#define get_remote_ctrl_point_cali()        remote_control.get_remote_control_point()  //get the remote control point，获取遥控器指针
+#define get_remote_ctrl_point_cali()        get_remote_control_point()  //get the remote control point，获取遥控器指针
 #define gyro_cali_disable_control()         RC_unable()                 //when imu is calibrating, disable the remote control.当imu在校准时候,失能遥控器
 #define gyro_cali_enable_control()          RC_restart(SBUS_RX_BUF_NUM)
 
@@ -275,5 +260,6 @@ extern void get_flash_latitude(float *latitude);
   */
 extern void calibrate_task(void *pvParameters);
 
+extern head_cali_t head_cali; //head cali data
 
 #endif
