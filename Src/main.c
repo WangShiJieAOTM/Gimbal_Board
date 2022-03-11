@@ -32,6 +32,7 @@
 #include "usart.h"
 #include "usb_device.h"
 #include "gpio.h"
+#include "vision.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -39,7 +40,22 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+/**
+  * @brief          定时器周期给视觉发�?�陀螺仪数据
+  * @param[in]      htim:定时器指�?
+  * @retval         none
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  if (htim == &htim1)
+  {
+    HAL_GPIO_TogglePin(CRAMA_TRI_GPIO_Port, CRAMA_TRI_Pin);
+    if(HAL_GPIO_ReadPin(CRAMA_TRI_GPIO_Port, CRAMA_TRI_Pin) ==  GPIO_PIN_SET)
+    {
+      vision_send_data(0x02);
+    }
+  }
+}
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/

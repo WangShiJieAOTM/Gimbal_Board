@@ -2,6 +2,7 @@
 #include "Remote_control.h"
 #include "struct_typedef.h"
 #include "string.h"
+#include "INS.h"
 
 // #include "referee.h"
 
@@ -11,13 +12,12 @@ extern DMA_HandleTypeDef hdma_usart1_rx;
 uint8_t Vision_Buffer[2][VISION_BUFFER_LEN]; //视觉数据暂存
 
 extern RC_ctrl_t rc_ctrl;
+extern INS imu;
 
 //角度初始化补偿
 float Vision_Comps_Yaw = COMPENSATION_YAW;
 float Vision_Comps_Pitch = COMPENSATION_PITCH;           //固定补偿，减小距离的影响
 float Vision_Comps_Pitch_Dist = COMPENSATION_PITCH_DIST; //根据距离补偿
-
-VisionSendHeader_t VisionSendHeader; //帧头
 
 VisionActData_t VisionActData; //行动模式结构体
 
@@ -69,7 +69,7 @@ void vision_read_data(uint8_t *ReadFormUart)
     {
 
       //接收数据拷贝
-      memcpy(&VisionRecvData, ReadFormUart, VISION_LEN_PACKED);
+      memcpy(&VisionRecvData, ReadFormUart, VISION_READ_LEN_PACKED);
 
       if (VisionRecvData.identify_target == TRUE)
         if_identify_target = TRUE; // 识别到装甲板
@@ -109,12 +109,16 @@ void vision_send_data(uint8_t CmdID)
   VisionSendData.CmdID = CmdID;
   VisionSendData.speed = 3;
 
+  VisionSendData.yaw = imu.INS_angle[0];
+	VisionSendData.pitch = imu.INS_angle[1];
+	VisionSendData.row = imu.INS_angle[2];
+
   VisionSendData.END = VISION_END;
 
-  memcpy(vision_send_pack, &VisionSendData, 4);
+  memcpy(vision_send_pack, &VisionSendData, VISION_SEND_LEN_PACKED);
 
-  //将打包好的数据通过串口移位发送到西奥迪男
-  HAL_UART_Transmit(&huart1, vision_send_pack, 4, 0xFFF);
+  //将打包好的数据通过串口移位发送到上位机
+  HAL_UART_Transmit(&huart1, vision_send_pack, VISION_SEND_LEN_PACKED, 0xFFF);
 
   memset(vision_send_pack, 0, 50);
 }

@@ -23,6 +23,7 @@
 #include "task.h"
 #include "main.h"
 #include "cmsis_os.h"
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "System_Config.h"
@@ -48,6 +49,7 @@
 
 /* USER CODE END Variables */
 osThreadId testHandle;
+
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
 osThreadId startTaskHandle;
@@ -119,8 +121,8 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* definition and creation of test */
-  // osThreadDef(test, test_task, osPriorityNormal, 0, 128);
-  // testHandle = osThreadCreate(osThread(test), NULL);
+  osThreadDef(test, test_task, osPriorityNormal, 0, 128);
+  testHandle = osThreadCreate(osThread(test), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
