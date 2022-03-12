@@ -128,14 +128,14 @@ void vision_send_data(uint8_t CmdID)
 
 	//写入帧头
 	memcpy(vision_send_pack, &VisionSendHeader, VISION_LEN_HEADER);
+  //帧头CRC8校验协议
+	append_CRC8_check_sum(vision_send_pack, VISION_LEN_HEADER);
 
-
-  VisionSendData.speed = 3;
-	// VisionSendData.yaw = imu.INS_angle[0];
-	// VisionSendData.pitch = imu.INS_angle[1];
-	// VisionSendData.row = imu.INS_angle[2];
-
-	VisionSendData.END = 0xFF;
+  uint8_t b = 3;
+  memcpy(&VisionSendData.speed, &b, 1);
+  memcpy(&VisionSendData.yaw, &imu.INS_angle[0], 12);
+  uint8_t a = 0xFF;
+  memcpy(&VisionSendData.END, &a, 1);
 	memcpy(vision_send_pack + VISION_LEN_HEADER, &VisionSendData, VISION_SEND_LEN_PACKED);
 
 	// //将打包好的数据通过串口移位发送到裁判系统

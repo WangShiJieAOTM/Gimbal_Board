@@ -17,7 +17,7 @@
 #define VISION_DATA_ERROR 0	  //视觉数据错误
 #define VISION_DATA_CORRECT 1 //视觉数据错误
 
-#define VISION_LEN_HEADER 2		  //帧头长
+#define VISION_LEN_HEADER 3		  //帧头长
 #define VISION_LEN_DATA 15		  //数据段长度,可自定义
 #define VISION_SEND_LEN_PACKED 14 //发送数据包长度
 #define VISION_READ_LEN_PACKED 18 //接受数据包长度
