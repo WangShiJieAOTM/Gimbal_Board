@@ -19,7 +19,7 @@
 
 #define VISION_LEN_HEADER 3		  //帧头长
 #define VISION_LEN_DATA 15		  //数据段长度,可自定义
-#define VISION_SEND_LEN_PACKED 14 //发送数据包长度
+#define VISION_SEND_LEN_PACKED 16 //发送数据包长度
 #define VISION_READ_LEN_PACKED 18 //接受数据包长度
 
 #define VISION_OFF (0x00)			  //关闭视觉
@@ -104,13 +104,16 @@ typedef __packed struct // 18 Byte
 // STM32发送,直接将打包好的数据一个字节一个字节地发送出去
 typedef struct
 {
+	uint8_t BEGIN; //帧头起始位,暂定0xA5
+	uint8_t CmdID; //指令
+
 	uint8_t speed; //射速
 
 	fp32 yaw;
 
 	fp32 pitch;
 
-	fp32 row;
+	fp32 roll;
 
 	uint8_t END;
 

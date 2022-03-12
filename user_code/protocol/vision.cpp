@@ -121,32 +121,32 @@ uint8_t vision_send_pack[50] = {0};
 uint8_t CmdID = 0;
 void vision_send_data(uint8_t CmdID)
 {
-	int i; //循环发送次数
+int i; //循环发送次数
+  uint16_t id1_17mm_speed_limit;
+  uint16_t bullet_speed;
+  //get_shooter_id1_17mm_speed_limit_and_bullet_speed(&id1_17mm_speed_limit, &bullet_speed);
 
-	VisionSendHeader.BEGIN = VISION_BEGIN;
-	VisionSendHeader.CmdID = CmdID; //对视觉来说最重要的数据
+  VisionSendData.BEGIN = VISION_BEGIN;
 
-	//写入帧头
-	memcpy(vision_send_pack, &VisionSendHeader, VISION_LEN_HEADER);
-  //帧头CRC8校验协议
-	append_CRC8_check_sum(vision_send_pack, VISION_LEN_HEADER);
+  VisionSendData.CmdID = CmdID;
+  VisionSendData.speed = 3;
+  VisionSendData.yaw = imu.INS_angle[0];
+  VisionSendData.pitch = imu.INS_angle[1];
+  VisionSendData.roll = imu.INS_angle[2];
+  VisionSendData.END = 0xFF;
 
-  uint8_t b = 3;
-  memcpy(&VisionSendData.speed, &b, 1);
-  memcpy(&VisionSendData.yaw, &imu.INS_angle[0], 12);
-  uint8_t a = 0xFF;
-  memcpy(&VisionSendData.END, &a, 1);
-	memcpy(vision_send_pack + VISION_LEN_HEADER, &VisionSendData, VISION_SEND_LEN_PACKED);
+  memcpy(vision_send_pack, &VisionSendData.BEGIN, 1);
+  memcpy(vision_send_pack+1, &VisionSendData.CmdID, 1);
+  memcpy(vision_send_pack+2, &VisionSendData.speed, 1);
+  memcpy(vision_send_pack+3, &VisionSendData.yaw, 4);
+  memcpy(vision_send_pack+7, &VisionSendData.pitch, 4);
+  memcpy(vision_send_pack+11, &VisionSendData.roll, 4);
+  memcpy(vision_send_pack+15, &VisionSendData.END, 1);
 
-	// //将打包好的数据通过串口移位发送到裁判系统
+  //将打包好的数据通过串口移位发送到西奥迪男
+  HAL_UART_Transmit(&huart1, vision_send_pack, VISION_SEND_LEN_PACKED, 0xFFF);
 
-	for (i = 0; i < VISION_SEND_LEN_PACKED + VISION_LEN_HEADER; i++)
-	{
-		HAL_UART_Transmit(&huart1, &vision_send_pack[i], sizeof(vision_send_pack[0]), 0xFFF);
-	}
-
-
-	memset(vision_send_pack, 0, 50);
+  memset(vision_send_pack, 0, 50);
 }
 
 void vision_error_angle(float *yaw_angle_error, float *pitch_angle_error)
