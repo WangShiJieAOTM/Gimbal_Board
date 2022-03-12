@@ -3,6 +3,8 @@
 #include "struct_typedef.h"
 #include "string.h"
 #include "INS.h"
+#include "tim.h"
+#include "CRC8_CRC16.h"
 
 // #include "referee.h"
 
@@ -18,6 +20,8 @@ extern INS imu;
 float Vision_Comps_Yaw = COMPENSATION_YAW;
 float Vision_Comps_Pitch = COMPENSATION_PITCH;           //固定补偿，减小距离的影响
 float Vision_Comps_Pitch_Dist = COMPENSATION_PITCH_DIST; //根据距离补偿
+
+VisionSendHeader_t VisionSendHeader; //帧头
 
 VisionActData_t VisionActData; //行动模式结构体
 
@@ -58,6 +62,24 @@ void vision_init()
   */
 uint8_t Vision_Time_Test[2] = {0}; //当前数据和上一次数据
 uint8_t Vision_Ping = 0;           //发送时间间隔
+
+/**
+  * @brief          定时器周期给视觉发送陀螺仪数据
+  * @param[in]      htim:定时器指针
+  * @retval         none
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  if (htim == &htim1)
+  {
+    HAL_GPIO_TogglePin(CRAMA_TRI_GPIO_Port, CRAMA_TRI_Pin);
+    if(HAL_GPIO_ReadPin(CRAMA_TRI_GPIO_Port, CRAMA_TRI_Pin) ==  GPIO_PIN_SET)
+    {
+      vision_send_data(0x02);
+    }
+  }
+}
+
 void vision_read_data(uint8_t *ReadFormUart)
 {
 
@@ -95,32 +117,36 @@ void vision_read_data(uint8_t *ReadFormUart)
   *				CmdID   0x03   小符
   *				CmdID   0x04   大符
   */
-uint8_t vision_send_pack[50] = {0}; //大于18就行
+uint8_t vision_send_pack[50] = {0};
 uint8_t CmdID = 0;
 void vision_send_data(uint8_t CmdID)
 {
-  int i; //循环发送次数
-  uint16_t id1_17mm_speed_limit;
-  uint16_t bullet_speed;
-  //get_shooter_id1_17mm_speed_limit_and_bullet_speed(&id1_17mm_speed_limit, &bullet_speed);
+	int i; //循环发送次数
 
-  VisionSendData.BEGIN = VISION_BEGIN;
+	VisionSendHeader.BEGIN = VISION_BEGIN;
+	VisionSendHeader.CmdID = CmdID; //对视觉来说最重要的数据
 
-  VisionSendData.CmdID = CmdID;
+	//写入帧头
+	memcpy(vision_send_pack, &VisionSendHeader, VISION_LEN_HEADER);
+
+
   VisionSendData.speed = 3;
+	// VisionSendData.yaw = imu.INS_angle[0];
+	// VisionSendData.pitch = imu.INS_angle[1];
+	// VisionSendData.row = imu.INS_angle[2];
 
-  VisionSendData.yaw = imu.INS_angle[0];
-	VisionSendData.pitch = imu.INS_angle[1];
-	VisionSendData.row = imu.INS_angle[2];
+	VisionSendData.END = 0xFF;
+	memcpy(vision_send_pack + VISION_LEN_HEADER, &VisionSendData, VISION_SEND_LEN_PACKED);
 
-  VisionSendData.END = VISION_END;
+	// //将打包好的数据通过串口移位发送到裁判系统
 
-  memcpy(vision_send_pack, &VisionSendData, VISION_SEND_LEN_PACKED);
+	for (i = 0; i < VISION_SEND_LEN_PACKED + VISION_LEN_HEADER; i++)
+	{
+		HAL_UART_Transmit(&huart1, &vision_send_pack[i], sizeof(vision_send_pack[0]), 0xFFF);
+	}
 
-  //将打包好的数据通过串口移位发送到上位机
-  HAL_UART_Transmit(&huart1, vision_send_pack, VISION_SEND_LEN_PACKED, 0xFFF);
 
-  memset(vision_send_pack, 0, 50);
+	memset(vision_send_pack, 0, 50);
 }
 
 void vision_error_angle(float *yaw_angle_error, float *pitch_angle_error)

@@ -58,8 +58,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define BUTTON_TRIG_Pin GPIO_PIN_7
-#define BUTTON_TRIG_GPIO_Port GPIOI
+#define CRAMA_TRI_Pin GPIO_PIN_7
+#define CRAMA_TRI_GPIO_Port GPIOI
 #define RSTN_IST8310_Pin GPIO_PIN_6
 #define RSTN_IST8310_GPIO_Port GPIOG
 #define LED_R_Pin GPIO_PIN_12
@@ -91,8 +91,6 @@ void Error_Handler(void);
 #define INT1_GYRO_Pin GPIO_PIN_5
 #define INT1_GYRO_GPIO_Port GPIOC
 #define INT1_GYRO_EXTI_IRQn EXTI9_5_IRQn
-#define CRAMA_TRI_Pin GPIO_PIN_9
-#define CRAMA_TRI_GPIO_Port GPIOE
 #define SPI2_CS_Pin GPIO_PIN_12
 #define SPI2_CS_GPIO_Port GPIOB
 #define CS1_GYRO_Pin GPIO_PIN_0

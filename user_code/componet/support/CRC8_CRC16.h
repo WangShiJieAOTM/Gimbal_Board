@@ -19,6 +19,9 @@
 #define CRC8_CRC16_H
 
 #include "main.h"
+#ifdef __cplusplus    
+extern "C" {         
+#endif
 
 /**
   * @brief          calculate the crc8  
@@ -107,4 +110,7 @@ extern uint32_t verify_CRC16_check_sum(uint8_t *pchMessage, uint32_t dwLength);
   * @retval         none
   */
 extern void append_CRC16_check_sum(uint8_t * pchMessage,uint32_t dwLength);
+#ifdef __cplusplus
+}
+#endif
 #endif

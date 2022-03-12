@@ -19,8 +19,6 @@ extern "C" {
 #include "shoot_task.h"
 #include "ins_task.h"
 #include "calibrate_task.h"
-#include "oled_task.h" 
-#include "led_flow_task.h"
 #include "detect_task.h"
 
 #define Tiny_Stack_Size       64

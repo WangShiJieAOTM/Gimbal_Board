@@ -19,8 +19,8 @@
 
 #define VISION_LEN_HEADER 2		  //帧头长
 #define VISION_LEN_DATA 15		  //数据段长度,可自定义
-#define VISION_SEND_LEN_PACKED 16 //发送数据包长度
-#define VISION_READ_LEN_PACKED 18  //接受数据包长度
+#define VISION_SEND_LEN_PACKED 14 //发送数据包长度
+#define VISION_READ_LEN_PACKED 18 //接受数据包长度
 
 #define VISION_OFF (0x00)			  //关闭视觉
 #define VISION_RED (0x01)			  //识别红色
@@ -104,10 +104,6 @@ typedef __packed struct // 18 Byte
 // STM32发送,直接将打包好的数据一个字节一个字节地发送出去
 typedef struct
 {
-	uint8_t BEGIN;
-
-	uint8_t CmdID;
-
 	uint8_t speed; //射速
 
 	fp32 yaw;
@@ -117,6 +113,7 @@ typedef struct
 	fp32 row;
 
 	uint8_t END;
+
 } VisionSendData_t;
 
 extern uint8_t CmdID;
@@ -127,7 +124,9 @@ extern uint8_t Vision_Buffer[2][VISION_BUFFER_LEN]; //视觉数据暂存
 
 //命令码ID,用来判断接收的是什么数据
 void vision_read_data(uint8_t *ReadFormUart1);
+
 void vision_send_data(uint8_t CmdID);
+
 void vision_error_angle(float *yaw_angle_error, float *pitch_angle_error);
 
 extern void vision_init();
@@ -135,5 +134,4 @@ extern void vision_init();
 bool_t vision_if_find_target();
 bool_t vision_if_armor(void);
 void vision_clean_ammorflag(void);
-
 #endif

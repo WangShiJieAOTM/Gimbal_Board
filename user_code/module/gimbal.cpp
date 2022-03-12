@@ -349,7 +349,7 @@ void Gimbal::behavour_set()
     if (toe_is_error(GIMBAL_YAW_MOTOR_TOE) || toe_is_error(GIMBAL_PITCH_MOTOR_TOE))
     {
         gimbal_behaviour_mode = GIMBAL_ZERO_FORCE;
-        buzzer_on(95, 10000);
+        //buzzer_on(95, 10000);
     }
     else
     {
@@ -629,7 +629,7 @@ void Gimbal::gimbal_relative_angle_control(fp32 *yaw, fp32 *pitch)
     if (vision_if_find_target() == TRUE)
     {
         vision_error_angle(yaw, pitch); //获取yaw 和 pitch的偏移量
-        vision_send_data(CmdID);        //发送指令给小电脑
+        //vision_send_data(CmdID);        //发送指令给小电脑
     }
     else
     {

@@ -16,6 +16,9 @@
         "shoot.h": "c",
         "remote_control.h": "c",
         "communicate.h": "c",
-        "*.tcc": "cpp"
+        "*.tcc": "cpp",
+        "vision.h": "c",
+        "gpio.h": "c",
+        "tim.h": "c"
     }
 }
