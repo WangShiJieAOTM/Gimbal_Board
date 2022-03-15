@@ -128,8 +128,13 @@ extern uint8_t Vision_Buffer[2][VISION_BUFFER_LEN]; //视觉数据暂存
 //命令码ID,用来判断接收的是什么数据
 void vision_read_data(uint8_t *ReadFormUart1);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 void vision_send_data(uint8_t CmdID);
-
+#ifdef __cplusplus
+};
+#endif
 void vision_error_angle(float *yaw_angle_error, float *pitch_angle_error);
 
 extern void vision_init();

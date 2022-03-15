@@ -5,6 +5,7 @@
 #include "INS.h"
 #include "tim.h"
 #include "CRC8_CRC16.h"
+#include "gimbal.h"
 
 // #include "referee.h"
 
@@ -15,6 +16,7 @@ uint8_t Vision_Buffer[2][VISION_BUFFER_LEN]; //视觉数据暂存
 
 extern RC_ctrl_t rc_ctrl;
 extern INS imu;
+extern Gimbal gimbal;
 
 //角度初始化补偿
 float Vision_Comps_Yaw = COMPENSATION_YAW;
@@ -41,6 +43,8 @@ uint8_t if_identify_target = FALSE;
 float Vision_Comps_Yaw_Send = COMPENSATION_YAW;
 float Vision_Comps_Pitch_Send = COMPENSATION_PITCH;
 float SB_K_comps = 3.f;
+
+static uint64_t send_cnt = 0;
 
 void vision_init()
 {
@@ -70,40 +74,40 @@ uint8_t Vision_Ping = 0;           //发送时间间隔
   */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-  if (htim == &htim1)
-  {
-    HAL_GPIO_TogglePin(CRAMA_TRI_GPIO_Port, CRAMA_TRI_Pin);
-    if(HAL_GPIO_ReadPin(CRAMA_TRI_GPIO_Port, CRAMA_TRI_Pin) ==  GPIO_PIN_SET)
-    {
-      vision_send_data(0x02);
-    }
-  }
+  // if (htim == &htim1)
+  // {
+  //HAL_GPIO_WritePin(CRAMA_TRI_GPIO_Port, CRAMA_TRI_Pin,GPIO_PIN_RESET);
+  //   if(send_cnt++ % 2)
+  //   {
+  //     vision_send_data(0x02);
+  //   }
+  // }
 }
 
 void vision_read_data(uint8_t *ReadFormUart)
 {
 
-  //判断帧头数据是否为0xA5
-  if (ReadFormUart[0] == VISION_BEGIN)
-  {
-    //判断帧头数据是否为0xff
-    if (ReadFormUart[17] == VISION_END)
-    {
+//  //判断帧头数据是否为0xA5
+//  if (ReadFormUart[0] == VISION_BEGIN)
+//  {
+//    //判断帧头数据是否为0xff
+//    if (ReadFormUart[17] == VISION_END)
+//    {
 
-      //接收数据拷贝
-      memcpy(&VisionRecvData, ReadFormUart, VISION_READ_LEN_PACKED);
+//      //接收数据拷贝
+//      memcpy(&VisionRecvData, ReadFormUart, VISION_READ_LEN_PACKED);
 
-      if (VisionRecvData.identify_target == TRUE)
-        if_identify_target = TRUE; // 识别到装甲板
-      else
-        if_identify_target = FALSE; // 未识别到装甲板
+//      if (VisionRecvData.identify_target == TRUE)
+//        if_identify_target = TRUE; // 识别到装甲板
+//      else
+//        if_identify_target = FALSE; // 未识别到装甲板
 
-      // //帧计算
-      // Vision_Time_Test[NOW] = xTaskGetTickCount();
-      // Vision_Ping = Vision_Time_Test[NOW] - Vision_Time_Test[LAST];//计算时间间隔
-      // Vision_Time_Test[LAST] = Vision_Time_Test[NOW];
-    }
-  }
+//      // //帧计算
+//      // Vision_Time_Test[NOW] = xTaskGetTickCount();
+//      // Vision_Ping = Vision_Time_Test[NOW] - Vision_Time_Test[LAST];//计算时间间隔
+//      // Vision_Time_Test[LAST] = Vision_Time_Test[NOW];
+//    }
+//  }
 }
 
 /**
@@ -143,8 +147,12 @@ int i; //循环发送次数
   memcpy(vision_send_pack+11, &VisionSendData.roll, 4);
   memcpy(vision_send_pack+15, &VisionSendData.END, 1);
 
-  //将打包好的数据通过串口移位发送到西奥迪男
-  HAL_UART_Transmit(&huart1, vision_send_pack, VISION_SEND_LEN_PACKED, 0xFFF);
+  //将打包好的数据通过串口移位发送到上位机
+  for (i = 0; i < VISION_SEND_LEN_PACKED; i++)
+	{
+		HAL_UART_Transmit(&huart1, &vision_send_pack[i], sizeof(vision_send_pack[0]), 0xFFF);
+	}
+  //HAL_UART_Transmit(&huart1, vision_send_pack, VISION_SEND_LEN_PACKED, 0xFFF);
 
   memset(vision_send_pack, 0, 50);
 }

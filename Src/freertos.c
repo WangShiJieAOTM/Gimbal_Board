@@ -27,6 +27,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "System_Config.h"
+#include "vision.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -143,12 +144,17 @@ void MX_FREERTOS_Init(void) {
 __weak void test_task(void const * argument)
 {
   /* init code for USB_DEVICE */
-  MX_USB_DEVICE_Init();
+  // MX_USB_DEVICE_Init();
   /* USER CODE BEGIN test_task */
   /* Infinite loop */
-  for(;;)
+  while(1)
   {
-    osDelay(1);
+    static uint64_t send_num = 0;
+    HAL_GPIO_WritePin(CRAMA_TRI_GPIO_Port, CRAMA_TRI_Pin,GPIO_PIN_SET);
+    vTaskDelay(5);
+    vision_send_data(0x02);
+    HAL_GPIO_WritePin(CRAMA_TRI_GPIO_Port, CRAMA_TRI_Pin,GPIO_PIN_RESET);
+    vTaskDelay(1);
   }
   /* USER CODE END test_task */
 }
