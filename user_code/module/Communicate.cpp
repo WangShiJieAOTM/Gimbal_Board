@@ -101,7 +101,7 @@ extern "C"
                     remote_control.unpack(0);
                     //记录数据接收时间
                     detect_hook(DBUS_TOE);
-                    remote_control.sbus_to_usart1(0);
+                    //remote_control.sbus_to_usart1(0);
                 }
             }
             else
@@ -133,7 +133,7 @@ extern "C"
                     remote_control.unpack(1);
                     //记录数据接收时间
                     detect_hook(DBUS_TOE);
-                    remote_control.sbus_to_usart1(1);
+                    //remote_control.sbus_to_usart1(1);
                 }
             }
         }
