@@ -149,7 +149,6 @@ __weak void test_task(void const * argument)
   /* Infinite loop */
   while(1)
   {
-    static uint64_t send_num = 0;
     HAL_GPIO_WritePin(CRAMA_TRI_GPIO_Port, CRAMA_TRI_Pin,GPIO_PIN_SET);
     vTaskDelay(5);
     vision_send_data(0x02);
